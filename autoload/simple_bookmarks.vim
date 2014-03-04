@@ -30,24 +30,13 @@ function! simple_bookmarks#Add(...)
 endfunction
 
 " Delete the user-chosen bookmark
-function! simple_bookmarks#Del(...)
+function! simple_bookmarks#Del(name)
   call s:ReadBookmarks()
 
-  if a:0 > 0
-    " then we have the needed data as the second argument
-    let file   = data.file
-    let cursor = data.cursor
-    let name   = fnamemodify(file, ":t") . cursor[1]
-  else
-    " we get it from the current position of the cursor
-    let cursor = getpos('.')
-    let name   = expand('%:t') . cursor[1]
-  endif
-
-  if !has_key(g:simple_bookmarks_storage, name)
+  if !has_key(g:simple_bookmarks_storage, a:name)
     return
   endif
-  call remove(g:simple_bookmarks_storage, name)
+  call remove(g:simple_bookmarks_storage, a:name)
 
   call s:WriteBookmarks()
 
@@ -83,7 +72,7 @@ function! simple_bookmarks#Copen()
     if g:simple_bookmarks_long_quickfix
       " then place the line on its own below
       call add(choices, {
-            \ 'text':     line
+            \ 'text':     line,
             \ 'filename': filename,
             \ 'lnum':     cursor[1],
             \ 'col':      cursor[2]
@@ -94,7 +83,7 @@ function! simple_bookmarks#Copen()
     else
       " place the line next to the bookmark name
       call add(choices, {
-            \ 'text':     line
+            \ 'text':     line,
             \ 'filename': filename,
             \ 'lnum':     cursor[1],
             \ 'col':      cursor[2]
