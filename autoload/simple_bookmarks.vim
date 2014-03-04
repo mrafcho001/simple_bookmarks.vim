@@ -6,16 +6,16 @@ function! simple_bookmarks#Add(...)
     let file   = data.file
     let cursor = data.cursor
     let line   = data.line
-    let name   = matchstr(file, "/[^/]*")
+    let name   = matchstr(file, "/[^/]*") . cursor[1]
     if empty(name)
-      let name = matchstr(file, "\\[^\\]*)
+      let name = matchstr(file, "\\[^\\]*) . cursor[1]
     endif
   else
     " we get it from the current position of the cursor
     let file   = expand('%:p')
     let cursor = getpos('.')
     let line   = substitute(getline('.'), '\v(^\s+)|(\s+$)', '', 'g')
-    let name   = expand('%:t') . line
+    let name   = expand('%:t') . cursor[1] 
   endif
 
   if file != ''
@@ -89,7 +89,7 @@ function! simple_bookmarks#Copen()
     if g:simple_bookmarks_long_quickfix
       " then place the line on its own below
       call add(choices, {
-            \ 'text':     name . cursor,
+            \ 'text':     name . cursor[1],
             \ 'filename': filename,
             \ 'lnum':     cursor[1],
             \ 'col':      cursor[2]
@@ -100,7 +100,7 @@ function! simple_bookmarks#Copen()
     else
       " place the line next to the bookmark name
       call add(choices, {
-            \ 'text':     name . cursor,
+            \ 'text':     name . cursor[1],
             \ 'filename': filename,
             \ 'lnum':     cursor[1],
             \ 'col':      cursor[2]
