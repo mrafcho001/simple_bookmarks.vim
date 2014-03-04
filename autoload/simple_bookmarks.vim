@@ -1,17 +1,21 @@
 " Add the current [filename, cursor position, line content] as a bookmark
-" under the given name
-function! simple_bookmarks#Add(name, ...)
+function! simple_bookmarks#Add(...)
   if a:0 > 0
     " then we have the needed data as the second argument
     let data   = a:1
     let file   = data.file
     let cursor = data.cursor
     let line   = data.line
+    let name   = matchstr(file, "/[^/]*")
+    if empty(name)
+      let name = matchstr(file, "\\[^\\]*)
+    endif
   else
     " we get it from the current position of the cursor
     let file   = expand('%:p')
     let cursor = getpos('.')
     let line   = substitute(getline('.'), '\v(^\s+)|(\s+$)', '', 'g')
+    let name   = expand('%:t') . line
   endif
 
   if file != ''
@@ -29,13 +33,27 @@ function! simple_bookmarks#Add(name, ...)
 endfunction
 
 " Delete the user-chosen bookmark
-function! simple_bookmarks#Del(name)
+function! simple_bookmarks#Del(...)
   call s:ReadBookmarks()
 
-  if !has_key(g:simple_bookmarks_storage, a:name)
+  if a:0 > 0
+    " then we have the needed data as the second argument
+    let file   = data.file
+    let cursor = data.cursor
+    let name   = matchstr(file, "/[^/]*") . cursor
+    if empty(name)
+      let name = matchstr(file, "\\[^\\]*) . cursor
+    endif
+  else
+    " we get it from the current position of the cursor
+    let cursor = getpos('.')
+    let name   = expand('%:t') . cursor 
+  endif
+
+  if !has_key(g:simple_bookmarks_storage, name)
     return
   endif
-  call remove(g:simple_bookmarks_storage, a:name)
+  call remove(g:simple_bookmarks_storage, name)
 
   call s:WriteBookmarks()
 
@@ -71,7 +89,6 @@ function! simple_bookmarks#Copen()
     if g:simple_bookmarks_long_quickfix
       " then place the line on its own below
       call add(choices, {
-            \ 'text':     name,
             \ 'filename': filename,
             \ 'lnum':     cursor[1],
             \ 'col':      cursor[2]
@@ -82,7 +99,6 @@ function! simple_bookmarks#Copen()
     else
       " place the line next to the bookmark name
       call add(choices, {
-            \ 'text':     name.' | '.line,
             \ 'filename': filename,
             \ 'lnum':     cursor[1],
             \ 'col':      cursor[2]
