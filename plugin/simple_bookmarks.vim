@@ -25,7 +25,7 @@ if !exists('g:simple_bookmarks_long_quickfix')
 endif
 
 if !exists('g:simple_bookmarks_signs')
-  let g:simple_bookmarks_signs = 0
+  let g:simple_bookmarks_signs = 1
 endif
 
 if !exists('g:simple_bookmarks_sign_text')
@@ -41,7 +41,7 @@ if !exists('g:simple_bookmarks_new_tab')
 endif
 
 if !exists('g:simple_bookmarks_auto_close')
-  let g:simple_bookmarks_auto_close = 1
+  let g:simple_bookmarks_auto_close = 0
 endif
 
 if !exists('g:simple_bookmarks_no_qf_mappings')

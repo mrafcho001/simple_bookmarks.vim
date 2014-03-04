@@ -89,6 +89,7 @@ function! simple_bookmarks#Copen()
     if g:simple_bookmarks_long_quickfix
       " then place the line on its own below
       call add(choices, {
+            \ 'text':     name.cursor,
             \ 'filename': filename,
             \ 'lnum':     cursor[1],
             \ 'col':      cursor[2]
@@ -99,6 +100,7 @@ function! simple_bookmarks#Copen()
     else
       " place the line next to the bookmark name
       call add(choices, {
+            \ 'text':     name.cursor,
             \ 'filename': filename,
             \ 'lnum':     cursor[1],
             \ 'col':      cursor[2]
