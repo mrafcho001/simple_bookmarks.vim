@@ -20,7 +20,7 @@ function! simple_bookmarks#Add(...)
 
   if file != ''
     call s:ReadBookmarks()
-    let g:simple_bookmarks_storage[a:name] = [file, cursor, line]
+    let g:simple_bookmarks_storage[name] = [file, cursor, line]
     call s:WriteBookmarks()
 
     if s:QuickfixOpened()
