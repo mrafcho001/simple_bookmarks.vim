@@ -6,10 +6,7 @@ function! simple_bookmarks#Add(...)
     let file   = data.file
     let cursor = data.cursor
     let line   = data.line
-    let name   = matchstr(file, "/[^/]*") . cursor[1]
-    if empty(name)
-      let name = matchstr(file, "\\[^\\]*) . cursor[1]
-    endif
+    let name   = fnamemodify(file, ":t") . cursor[1]
   else
     " we get it from the current position of the cursor
     let file   = expand('%:p')
@@ -40,14 +37,11 @@ function! simple_bookmarks#Del(...)
     " then we have the needed data as the second argument
     let file   = data.file
     let cursor = data.cursor
-    let name   = matchstr(file, "/[^/]*") . cursor
-    if empty(name)
-      let name = matchstr(file, "\\[^\\]*) . cursor
-    endif
+    let name   = fnamemodify(file, ":t") . cursor[1]
   else
     " we get it from the current position of the cursor
     let cursor = getpos('.')
-    let name   = expand('%:t') . cursor 
+    let name   = expand('%:t') . cursor[1]
   endif
 
   if !has_key(g:simple_bookmarks_storage, name)
@@ -89,7 +83,7 @@ function! simple_bookmarks#Copen()
     if g:simple_bookmarks_long_quickfix
       " then place the line on its own below
       call add(choices, {
-            \ 'text':     name . cursor[1],
+            \ 'text':     line
             \ 'filename': filename,
             \ 'lnum':     cursor[1],
             \ 'col':      cursor[2]
@@ -100,7 +94,7 @@ function! simple_bookmarks#Copen()
     else
       " place the line next to the bookmark name
       call add(choices, {
-            \ 'text':     name . cursor[1],
+            \ 'text':     line
             \ 'filename': filename,
             \ 'lnum':     cursor[1],
             \ 'col':      cursor[2]
@@ -246,12 +240,7 @@ function! s:DeleteQuickfixBookmark()
     return
   end
 
-  if g:simple_bookmarks_long_quickfix
-    let name = bookmark_data.text
-  else
-    let name = matchstr(bookmark_data.text, '.\{-}\ze | ')
-  endif
-
+  let name = fnamemodify(bufname(bookmark_data.bufnr), ":t") . bookmark_data.lnum
   let bookmark = g:simple_bookmarks_storage[name]
 
   call insert(g:simple_bookmarks_deletion_stack, {
